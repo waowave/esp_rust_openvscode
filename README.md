@@ -14,3 +14,5 @@ cargo-generate espflash cargo-espflash cargo-cache cargo-update
 image size ~8GB
 
 after run, you can install openvscode rust-analyzer extension. 
+
+![](images/screenshot1.png)
