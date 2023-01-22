@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  opencodeserver:
+    user: 1000:1000
+#    image: ghcr.io/waowave/xao_openvscode_rust:latest
+    ports:
+      - 59202:3000
+#      - 60000-61000:60000-61000
+    volumes:
+      - ./Workspace:/home/workspace
+#      - ./Cargo:/home/workspace/.cargo
+    environment:
+      CARGO_HOME: /home/workspace/.cargo
+      OPENVSCODE_HOST: 0.0.0.0
+    build:
+      context: src
+      dockerfile: Dockerfile
+
