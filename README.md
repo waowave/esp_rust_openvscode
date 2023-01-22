@@ -12,3 +12,5 @@ cargo-generate espflash cargo-espflash cargo-cache cargo-update
 .cargo and .openvscode directory link to /home/esprust/work
 
 image size ~8GB
+
+after run, you can install openvscode rust-analyzer extension. 
