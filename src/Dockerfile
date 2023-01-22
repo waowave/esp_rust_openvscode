@@ -3,14 +3,9 @@
 FROM archlinux:latest
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    RUSTUP_HOME=/home/workspace/rust/rustup \
-    CARGO_HOME=/home/workspace/cargo \
-    PATH=/usr/local/cargo/bin:/opt/openvscode-server/bin:/usr/local/bin:/home/workspace/.cargo/bin/:/home/workspace/opt/bin:/opt/rust/bin:/opt/esprust/cargo/bin:/opt/esprust/rust/bin:$PATH \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     EDITOR=code \
-    USER=root \
-    HOME=/root \
     VISUAL=code \
     GIT_EDITOR="code --wait" \
     OPENVSCODE_SERVER_ROOT=/opt/openvscode-server
@@ -41,7 +36,11 @@ RUN	mkdir /opt/esprust /home/workspace && \
 USER 1000:1000
 
 WORKDIR /opt/esprust
-ENV HOME=/opt/esprust \
+
+ENV RUSTUP_HOME=/opt/rust/rustup \
+    CARGO_HOME=/opt/cargo \
+    PATH=/usr/local/cargo/bin:/opt/openvscode-server/bin:/usr/local/bin:/home/workspace/.cargo/bin/:/opt/cargo/bin:/opt/rust/bin:/opt/esprust/cargo/bin:/opt/esprust/rust/bin:$PATH \
+    HOME=/opt/esprust \
     USER=workspace
 
 ##RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
@@ -63,5 +62,5 @@ ENV HOME=/home/workspace \
     USER=workspace
 RUN chown -R 1000:1000 /home/workspace
 
-ENTRYPOINT bash -c ". /home/workspace/export-esp.sh; openvscode-server --host ${OPENVSCODE_HOST} --without-connection-token"
+ENTRYPOINT bash -c ". /opt/esprust/export-esp.sh; openvscode-server --host ${OPENVSCODE_HOST} --without-connection-token"
 # --connection-token ${OPENVSCODE_TOKEN}
