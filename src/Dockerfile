@@ -8,22 +8,15 @@ ENV DEBIAN_FRONTEND=noninteractive \
     EDITOR=code \
     VISUAL=code \
     GIT_EDITOR="code --wait" \
-    OPENVSCODE_SERVER_ROOT=/opt/openvscode-server
+    USER=root \
+    HOME=/root \
+    OPENVSCODE_SERVER_ROOT=/opt/openvscode-server \
+    PATH=$PATH:/opt/openvscode-server/bin:/home/esprust/.cargo/bin
 
 RUN pacman -Syu  --noconfirm
 RUN pacman -S --noconfirm espflash espup cargo-generate gcc glibc curl wget perl python python-pip openssl ninja pkgconf bash glibc make cmake tar git ncdu ca-certificates jq
-
-#curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
-#chmod a+x espup
-#curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile default --default-toolchain nightly --component rust-src && \
-#RUN echo "https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories
-#RUN apk --no-cache add \
-#	ca-certificates tar git curl wget libc6-compat g++ cmake gcc make jq libc6-compat gcompat icu-data-full openssl-dev nano ninja python3 py3-pip eudev-dev pkgconfig ncdu perl bash && \
-#RUN apt-get update -y
-#RUN apt-get upgrade -y && apt-get dist-upgrade -y 
-
+#RUN apk add ca-certificates tar git curl wget libc6-compat g++ cmake gcc make jq libc6-compat gcompat icu-data-full openssl-dev nano ninja python3 py3-pip eudev-dev pkgconfig ncdu perl bash python3 python3-pip
 #RUN apt-get install -y build-essential ninja-build python3 python3-pip libc6 libicu-dev libssl-dev pkgconf nano tar ca-certificates git curl wget perl bash gcc g++ pkgconf libudev-dev
-#RUN apt-get install python3 python3-pip 
 
 RUN	mkdir /vscode_tmp && \
 	cd /vscode_tmp && \
@@ -31,17 +24,14 @@ RUN	mkdir /vscode_tmp && \
 	tar xvfz *tar.gz && \
 	rm -rf *tar.gz && \
 	mv * /opt/openvscode-server
-RUN	mkdir /opt/esprust /home/workspace && \
-	chown -R 1000:1000 /opt/esprust /home/workspace
+RUN	mkdir /home/esprust && \
+	ln -s /home/esprust/work/.openvscode-server /home/esprust/.openvscode-server && \
+	chown -R 1000:1000 /home/esprust
 USER 1000:1000
 
-WORKDIR /opt/esprust
-
-ENV RUSTUP_HOME=/opt/rust/rustup \
-    CARGO_HOME=/opt/cargo \
-    PATH=/usr/local/cargo/bin:/opt/openvscode-server/bin:/usr/local/bin:/home/workspace/.cargo/bin/:/opt/cargo/bin:/opt/rust/bin:/opt/esprust/cargo/bin:/opt/esprust/rust/bin:$PATH \
-    HOME=/opt/esprust \
-    USER=workspace
+WORKDIR /home/esprust
+ENV HOME=/home/esprust \
+    USER=esprust
 
 ##RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 #RUN curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup && \
@@ -49,18 +39,12 @@ ENV RUSTUP_HOME=/opt/rust/rustup \
 #	./espup install --esp-idf-version 5.0
 ##RUN cargo search --limit 0
 ##RUN cargo install espup
-#ENV RUST_BACKTRACE=1
+
 RUN espup install --esp-idf-version 5.0
-#ENTRYPOINT sh -c sh
-#USER 1000:1000
-#token in url = tkn
-##RUN cargo install cargo-generate espflash cargo-espflash
+RUN cargo install cargo-generate espflash cargo-espflash
+RUN cargo install cargo-cache cargo-update
+RUN cargo cache -e
 
-
-WORKDIR /home/workspace
-ENV HOME=/home/workspace \
-    USER=workspace
-RUN chown -R 1000:1000 /home/workspace
-
-ENTRYPOINT bash -c ". /opt/esprust/export-esp.sh; openvscode-server --host ${OPENVSCODE_HOST} --without-connection-token"
+ENV CARGO_HOME=/home/esprust/work/.cargo
+ENTRYPOINT bash -c ". /home/esprust/export-esp.sh; openvscode-server --host ${OPENVSCODE_HOST} --without-connection-token"
 # --connection-token ${OPENVSCODE_TOKEN}

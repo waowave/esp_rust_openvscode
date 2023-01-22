@@ -7,10 +7,10 @@ services:
       - 59202:3000
 #      - 60000-61000:60000-61000
     volumes:
-      - ./Workspace:/home/workspace
+      - ./Workspace:/home/esprust/work
 #      - ./Cargo:/home/workspace/.cargo
     environment:
-      CARGO_HOME: /home/workspace/.cargo
+#      CARGO_HOME: /home/esprust/work/.cargo
       OPENVSCODE_HOST: 0.0.0.0
     build:
       context: src
